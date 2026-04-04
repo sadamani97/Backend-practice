@@ -1,8 +1,10 @@
+import bcrypt from "bcryptjs";
+import {generateToken} from "../utilities/generateToken.js"
 
 const users = [
-    { id:1, name: "sadamani", age: 29, gmail:"sadamanism98@gmail.com", department: "developer" },
-    { id:2, name: "mani", age: 28, gmail:"sadamanism98@gmail.com", department: "developer" },
-    { id:3, name: "sada", age: 30, gmail:"sadamanism98@gmail.com", department: "developer" }
+    { id:1, name: "sadamani", age: 29, gmail:"sadamanism97@gmail.com", department: "developer",password:"sada1234" },
+    { id:2, name: "mani", age: 28, gmail:"sadamanism1997@gmail.com", department: "developer",password:"sadamani123" },
+    { id:3, name: "sada", age: 30, gmail:"manisada98@gmail.com", department: "developer",password:"satish1234" }
 ];
 export const getUsers = (req, res) => {
     res.status(200).json(users);
@@ -45,7 +47,7 @@ export const updateUser = (req,res) => {
     }
         if(name) user.name = name;
         if(gmail) user.gmail = gmail;
-        if(age) user.age = age;
+        if(age !== undefined) user.age = age;
         if(department) user.department = department;
 
         res.json(user);
@@ -63,5 +65,36 @@ export const updateUser = (req,res) => {
         const deleted = users.splice(index,1);
         res.json({message:"Deleted", user: deleted[0]});
     }
+
+    // register
+
+    export const registerUser= async (req,res) => {
+        try{
+            console.log("BODY",req.body);
+        const { name, gmail, age, password} = req.body;
+        if (!name || !gmail || !password || age === undefined) {
+            return res.status(400).json({ message: "user exists"})
+        }
+        const exists = users.find(u => u.gmail == gmail);
+        if(exists) {
+            return res.status(400).json({ message: "User exists"})
+        }
+        const hashed = await bcrypt.hash(password,10);
+
+        const newUser = {
+            id:users.length +1,
+            name,
+            gmail,
+            password: hashed
+        };
+        users.push(newUser)
+        const token = generateToken(newUser);
+
+        res.status(201).json({user:newUser,token});
+    } catch (error) {
+        console.log("ERROR",error)
+        res.status(500).json({message:error.message})
+    }
+        }
     
 
