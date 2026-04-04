@@ -32,4 +32,36 @@ export const createUser = (req, res) => {
     };
     users.push(newUser);
     res.status(201).json(newUser);
+
 };
+
+export const updateUser = (req,res) => {
+    const id = parseInt(req.params.id);
+    const {name, gmail, department, age } = req.body;
+
+    const user = users.find(u => u.id === id);
+    if(!user) {
+        return res.status(404).json({message:"user not found"});
+    }
+        if(name) user.name = name;
+        if(gmail) user.gmail = gmail;
+        if(age) user.age = age;
+        if(department) user.department = department;
+
+        res.json(user);
+    }
+
+    // delete User
+    export const deleteUser= (req,res) => {
+        const id = parseInt(req.params.id);
+
+        const index = users.findIndex(u => u.id === id);
+        if (index === -1) {
+            return res.status(404).json({message:"user not found"});
+
+        }
+        const deleted = users.splice(index,1);
+        res.json({message:"Deleted", user: deleted[0]});
+    }
+    
+
