@@ -2,9 +2,9 @@ import bcrypt from "bcryptjs";
 import {generateToken} from "../utilities/generateToken.js"
 
 const users = [
-    { id:1, name: "sadamani", age: 29, gmail:"sadamanism97@gmail.com", department: "developer",password:"sada1234" },
-    { id:2, name: "mani", age: 28, gmail:"sadamanism1997@gmail.com", department: "developer",password:"sadamani123" },
-    { id:3, name: "sada", age: 30, gmail:"manisada98@gmail.com", department: "developer",password:"satish1234" }
+    { id:1, name: "sadamani", age: 29, gmail:"sadamanism97@gmail.com", department: "developer", password:"sada1234" },
+    { id:2, name: "mani", age: 28, gmail:"sadamanism1997@gmail.com", department: "developer", password:"sadamani123" },
+    { id:3, name: "sada", age: 30, gmail:"manisada98@gmail.com", department: "developer", password:"satish1234" }
 ];
 export const getUsers = (req, res) => {
     res.status(200).json(users);
@@ -96,5 +96,26 @@ export const updateUser = (req,res) => {
         res.status(500).json({message:error.message})
     }
         }
+
+
+    // login
+
+    export const loginUser = async (req,res) => {
+        const {gmail, password}=req.body;
+
+        const user = users.find(u => u.gmail == gmail)
+
+        if(!user){
+            return res.status(400).json({message: "user not found"})
+        }
+
+        const match = bcrypt.compare(password,user.password);
+
+        if(!match) {
+            return res.status(404).json({message:"User not match"})
+        }
+        const token =generateToken(user);
+        res.json({user,token})
+    }
     
 
