@@ -2,9 +2,9 @@ import bcrypt from "bcryptjs";
 import {generateToken} from "../utilities/generateToken.js"
 
 const users = [
-    { id:1, name: "sadamani", age: 29, gmail:"sadamanism97@gmail.com", department: "developer", password:"sada1234" },
-    { id:2, name: "mani", age: 28, gmail:"sadamanism1997@gmail.com", department: "developer", password:"sadamani123" },
-    { id:3, name: "sada", age: 30, gmail:"manisada98@gmail.com", department: "developer", password:"satish1234" }
+    { id:1, name: "sadamani", age: 29, gmail:"sadamanism97@gmail.com", department: "developer", password: await bcrypt.hash("sada1234",10) },
+    { id:2, name: "mani", age: 28, gmail:"sadamanism1997@gmail.com", department: "developer", password:await bcrypt.hash("sadamani123",10) },
+    { id:3, name: "sada", age: 30, gmail:"manisada98@gmail.com", department: "developer", password:await bcrypt.hash("satish1234",10) }
 ];
 export const getUsers = (req, res) => {
     res.status(200).json(users);
@@ -47,7 +47,7 @@ export const updateUser = (req,res) => {
     }
         if(name) user.name = name;
         if(gmail) user.gmail = gmail;
-        if(age !== undefined) user.age = age;
+        if(age) user.age = age;
         if(department) user.department = department;
 
         res.json(user);
@@ -109,7 +109,7 @@ export const updateUser = (req,res) => {
             return res.status(400).json({message: "user not found"})
         }
 
-        const match = bcrypt.compare(password,user.password);
+        const match =await bcrypt.compare(password,user.password);
 
         if(!match) {
             return res.status(404).json({message:"User not match"})
